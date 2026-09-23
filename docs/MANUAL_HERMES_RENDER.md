@@ -90,18 +90,26 @@ If you want to chat from your mobile phone:
 
 ### Step 3: Deploy the Server on Render.com
 
-#### Option A: Deploy via GitHub (Recommended for On-Server `chat.html`)
-1. Push or fork this repository to your GitHub account.
+#### Option A: Deploy via GitHub (Recommended — Includes On-Server `chat.html`)
+1. Push or fork this repository to your GitHub account (or use `https://github.com/thurtado1993/hermes-agent-render`).
 2. Sign in to **[https://render.com/](https://render.com/)**.
 3. In the Dashboard, click **+ New** ➔ **Web Service**.
-4. Select your repository.
+4. Select your connected GitHub repository.
 5. Configure the service:
    - **Name**: `hermes-agent-free`
    - **Region**: Select Frankfurt (EU) or Oregon/Ohio (US).
-   - **Environment**: Docker (Render will detect `deploy/Dockerfile`).
+   - **Branch**: `main`
+   - **Runtime / Environment**: `Docker` (Render automatically detects the root `./Dockerfile`).
    - **Instance Type**: **Free ($0/month)**.
 
-#### Option B: Deploy Pre-built Image (Quick No-Code Setup)
+> [!NOTE]
+> Render looks for `./Dockerfile` at the root of the repository. We provide `Dockerfile` right at the root so zero manual path configuration is needed.
+
+#### Option B: Deploy with Render Blueprint (`render.yaml`)
+1. In Render Dashboard, click **+ New** ➔ **Blueprint**.
+2. Connect this repository. Render will automatically read `render.yaml` from the root and configure all variables and ports automatically.
+
+#### Option C: Deploy Pre-built Image (Quick No-Code Setup without custom chat.html)
 1. In Render, select **"Existing Image"**.
 2. Enter: `docker.io/nousresearch/hermes-agent:latest`.
 3. Select the **Free** instance type.
@@ -125,7 +133,7 @@ Click **Create Web Service**. After 2–3 minutes, the status badge will turn gr
 ---
 
 ### Step 4: Using the On-Server Web Chat (`chat.html`)
-If deployed using our repository's `deploy/Dockerfile`:
+If deployed using our repository's `Dockerfile`:
 1. Open your web browser on any device (laptop, smartphone, iPad).
 2. Navigate directly to your Render public URL:
    ```text
@@ -233,24 +241,49 @@ Render's free tier idles after 15 minutes of inactivity. To eliminate cold start
 ---
 
 ### Paso 3: Desplegar el Servidor en Render.com
-1. Regístrate gratis en **[https://render.com/](https://render.com/)**.
-2. Pulsa en **+ New** ➔ **Web Service**.
-3. Si conectas tu repositorio de GitHub, Render usará automáticamente `deploy/Dockerfile`.
-   *(O si prefieres despliegue directo sin GitHub, elige **Existing Image** con `docker.io/nousresearch/hermes-agent:latest`)*.
-4. Selecciona el plan **Free ($0/month)**.
-5. En **Environment Variables**, añade:
-   * `OPENROUTER_API_KEY`: Tu clave `sk-or-v1-...`.
-   * `MODEL_NAME`: `meta-llama/llama-3.3-70b-instruct:free`.
-   * `PORT`: `10000`.
-   * `API_SERVER_KEY`: Tu contraseña secreta para el servidor.
-   * `TELEGRAM_BOT_TOKEN` *(opcional)*: El token de @BotFather.
-   * `TELEGRAM_ALLOWED_USERS` *(opcional)*: Tu ID numérico de Telegram.
-6. Haz clic en **Create Web Service**. Espera 2–3 minutos hasta ver la etiqueta verde **Live**.
+
+#### Opción A: Despliegue mediante GitHub (Recomendado — Incluye chat web en el servidor)
+1. Sube o haz fork de este repositorio a tu cuenta de GitHub (o usa `https://github.com/thurtado1993/hermes-agent-render`).
+2. Inicia sesión en **[https://render.com/](https://render.com/)**.
+3. En el panel principal, haz clic en **+ New** ➔ **Web Service**.
+4. Selecciona tu repositorio de GitHub conectado.
+5. Configura el servicio:
+   * **Name**: `hermes-agent-free`
+   * **Region**: Selecciona Frankfurt (Europa) o Oregon/Ohio (EE. UU.).
+   * **Branch**: `main`
+   * **Runtime / Environment**: `Docker` (Render detecta automáticamente el `Dockerfile` ubicado en la raíz del repositorio).
+   * **Instance Type**: **Free ($0/month)**.
+
+> [!NOTE]
+> Render busca por defecto el archivo `Dockerfile` en la raíz del repositorio. Este repositorio incluye `Dockerfile` directamente en la raíz, por lo que no es necesario realizar configuraciones manuales de rutas.
+
+#### Opción B: Despliegue con Blueprint (`render.yaml`)
+1. En el panel de Render, pulsa en **+ New** ➔ **Blueprint**.
+2. Conecta este repositorio. Render leerá automáticamente el archivo `render.yaml` de la raíz y configurará los servicios y variables.
+
+#### Opción C: Despliegue con Imagen Precompilada (Sin chat.html integrado)
+1. En Render, selecciona **"Existing Image"**.
+2. Introduce: `docker.io/nousresearch/hermes-agent:latest`.
+3. Elige el plan **Free**.
+
+#### Variables de Entorno (Environment Variables)
+Añade las siguientes claves en la sección **Environment Variables**:
+
+| Variable | Valor Recomendado | Explicación |
+| :--- | :--- | :--- |
+| `OPENROUTER_API_KEY` | *(Tu clave `sk-or-v1-...`)* | Conecta el agente con OpenRouter |
+| `MODEL_NAME` | `meta-llama/llama-3.3-70b-instruct:free` | Modelo gratuito potente por defecto |
+| `PORT` | `10000` | Puerto HTTP esperado por el router de Render |
+| `API_SERVER_KEY` | *(Tu contraseña secreta)* | Protege el acceso al servidor y chat |
+| `TELEGRAM_BOT_TOKEN` | *(Opcional, de @BotFather)* | Habilita el bot móvil de Telegram |
+| `TELEGRAM_ALLOWED_USERS`| *(Opcional, ID numérico)* | Restringe el bot únicamente a tu usuario |
+
+Haz clic en **Create Web Service**. Espera 2–3 minutos hasta ver la etiqueta verde **Live**.
 
 ---
 
 ### Paso 4: Usar el Chat Web en el Servidor (`chat.html`)
-Si has desplegado el proyecto con el `deploy/Dockerfile` incluido:
+Si has desplegado el proyecto con el `Dockerfile` incluido:
 1. Abre tu navegador en cualquier dispositivo (ordenador, móvil o tablet).
 2. Entra directamente a la URL de tu Render:
    ```text

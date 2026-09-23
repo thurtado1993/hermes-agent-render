@@ -44,53 +44,53 @@ Say goodbye to recurring $20+/month subscriptions like ChatGPT Plus or Claude Pr
 ## 📁 Repository Structure
 
 ```
-manual-hermes-render/
+hermes-agent-render/
 ├── README.md                      # Project documentation (English & Spanish)
 ├── LICENSE                        # MIT License
 ├── .gitignore                     # Git ignore rules
+├── Dockerfile                     # Custom container (Hermes + Web Chat) — auto-detected by Render
+├── render.yaml                    # Render Blueprint (Infrastructure as Code)
 ├── docs/
-│   ├── MANUAL_HERMES_RENDER.md   # Step-by-step master manual (English & Spanish)
+│   ├── MANUAL_HERMES_RENDER.md   # Complete step-by-step installation manual (English & Spanish)
 │   └── PRESENTATION_SLIDES.md    # Markdown slide deck for Marp / Slidev
 ├── web/
 │   ├── chat.html                 # Hosted directly on Render (relative endpoints)
 │   ├── chat_web.html             # Standalone client for any local browser
 │   └── presentation.html         # Interactive slide presentation (Bilingual EN/ES)
 ├── deploy/
-│   ├── Dockerfile                # Custom container bundling Hermes + on-server chat
+│   ├── Dockerfile                # Deployment container backup
 │   ├── server.py                 # Lightweight reverse proxy & static file server
 │   ├── start.sh                  # Process supervisor (Gateway + Web UI)
 │   ├── docker-compose.yml        # Local or alternative container deployment
-│   └── render.yaml               # Render Blueprint (Infrastructure as Code)
+│   └── render.yaml               # Render Blueprint backup
 └── config/
     └── .env.example              # Environment variables template
 ```
 
 ---
 
-## 🚀 Quickstart in 3 Steps
+## 📖 Installation & Setup Manual
 
-### Step 1: Obtain a Free OpenRouter API Key
-1. Visit [openrouter.ai](https://openrouter.ai) and sign in.
-2. Go to [openrouter.ai/keys](https://openrouter.ai/keys) and click **Create Key**.
-3. Name it `Hermes Free`, leave credit limit empty, and copy your `sk-or-v1-...` key.
+The full, foolproof setup guide covers everything from obtaining free API keys to deploying on Render with persistent memory and Telegram integration.
 
-### Step 2: Deploy on Render.com
-1. Register for free on [render.com](https://render.com).
-2. Click **+ New** ➔ **Web Service**.
-3. Connect your GitHub repository (or choose **Existing Image** with `docker.io/nousresearch/hermes-agent:latest`).
-4. Select the **Free** instance type ($0/mo).
-5. Add the following **Environment Variables**:
-   - `OPENROUTER_API_KEY`: Your OpenRouter secret key.
-   - `MODEL_NAME`: `meta-llama/llama-3.3-70b-instruct:free`
-   - `PORT`: `10000`
-   - `API_SERVER_KEY`: A secure password of your choice.
-   - `TELEGRAM_BOT_TOKEN` *(optional)*: Bot token from Telegram `@BotFather`.
-   - `TELEGRAM_ALLOWED_USERS` *(optional)*: Your numeric Telegram ID from `@userinfobot`.
-6. Click **Create Web Service**. Wait 2–3 minutes until the status shows **Live**.
+👉 **[Read the Full Step-by-Step Installation Manual (English)](docs/MANUAL_HERMES_RENDER.md#-english-manual)**
 
-### Step 3: Start Chatting!
-- **From Your Browser**: Open `https://your-service.onrender.com` in your browser. Enter your `API_SERVER_KEY` and start chatting immediately!
-- **From Telegram**: Open Telegram, find your bot, tap **Start**, and send your first message.
+### What is covered in the manual:
+1. **Architecture & Prerequisites**: How Hermes Agent, Render, and OpenRouter work together.
+2. **Step 1: Free OpenRouter API Key**: How to generate a `$0.00` key without credit card.
+3. **Step 2: Private Telegram Bot**: Create your secure bot via `@BotFather` and lock access to your user ID.
+4. **Step 3: Render Deployment**:
+   - **Option A (Recommended)**: Connect this GitHub repo (Render auto-detects the root `Dockerfile` and includes `chat.html`).
+   - **Option B**: Deploy via Render Blueprint (`render.yaml`).
+   - **Option C**: Prebuilt image deployment.
+   - Comprehensive environment variables table.
+5. **Step 4: Using the On-Server Web Chat (`chat.html`)**: Instant zero-CORS browser chat at `https://your-service.onrender.com`.
+6. **Step 5: Standalone Web Clients (`chat_web.html` & NextChat)**.
+7. **Free Models Catalog (`:free`)**: Llama 3.3 70B, Gemini 2.0 Flash Lite, DeepSeek R1, Qwen 2.5 Coder.
+8. **24/7 Keep-Alive**: How to keep Render free tier awake permanently with free pings.
+9. **Troubleshooting & FAQ**: Common deployment questions and fixes.
+
+👉 **[View Interactive Swiss Modernist Presentation](web/presentation.html)** (Supports touch gestures, language switch, and file copy).
 
 ---
 
@@ -131,10 +131,12 @@ Despídete de pagar 20€/mes por suscripciones como ChatGPT Plus o Claude Pro. 
 ## 📁 Estructura del Repositorio
 
 ```
-manual-hermes-render/
+hermes-agent-render/
 ├── README.md                      # Documentación del proyecto (Inglés y Español)
 ├── LICENSE                        # Licencia MIT
 ├── .gitignore                     # Reglas de exclusión de Git
+├── Dockerfile                     # Contenedor (Hermes + Chat Web) — detectado automáticamente por Render
+├── render.yaml                    # Render Blueprint (Infraestructura como Código)
 ├── docs/
 │   ├── MANUAL_HERMES_RENDER.md   # Manual maestro paso a paso (Inglés y Español)
 │   └── PRESENTATION_SLIDES.md    # Diapositivas en Markdown para Marp / Slidev
@@ -143,41 +145,39 @@ manual-hermes-render/
 │   ├── chat_web.html             # Cliente autónomo para cualquier navegador local
 │   └── presentation.html         # Presentación de diapositivas interactiva (Bilingüe EN/ES)
 ├── deploy/
-│   ├── Dockerfile                # Contenedor personalizado (Hermes + chat en servidor)
+│   ├── Dockerfile                # Copia de seguridad del contenedor
 │   ├── server.py                 # Reverse proxy ligero y servidor de archivos estáticos
 │   ├── start.sh                  # Supervisor de procesos (Gateway + Web UI)
 │   ├── docker-compose.yml        # Despliegue en contenedor local o alternativo
-│   └── render.yaml               # Render Blueprint (Infraestructura como Código)
+│   └── render.yaml               # Copia de seguridad del Blueprint
 └── config/
     └── .env.example              # Plantilla de variables de entorno
 ```
 
 ---
 
-## 🚀 Inicio Rápido en 3 Pasos
+## 📖 Manual de Instalación y Despliegue
 
-### Paso 1: Obtén tu Clave Gratuita de OpenRouter
-1. Entra en [openrouter.ai](https://openrouter.ai) e inicia sesión con Google o correo.
-2. Ve a [openrouter.ai/keys](https://openrouter.ai/keys) y pulsa en **Create Key**.
-3. Nómbrala `Hermes Gratis`, deja el límite monetario vacío y copia tu clave `sk-or-v1-...`.
+La guía completa y detallada paso a paso para cualquier usuario (entienda o no de informática) explica todo el proceso desde cero hasta tener el agente funcionando sin coste:
 
-### Paso 2: Despliega en Render.com
-1. Crea tu cuenta gratuita en [render.com](https://render.com).
-2. Pulsa en **+ New** ➔ **Web Service**.
-3. Conecta este repositorio de GitHub (o selecciona **Existing Image** con `docker.io/nousresearch/hermes-agent:latest`).
-4. Elige el plan **Free** ($0/mes).
-5. Añade las siguientes **Variables de Entorno**:
-   - `OPENROUTER_API_KEY`: Tu clave secreta de OpenRouter.
-   - `MODEL_NAME`: `meta-llama/llama-3.3-70b-instruct:free`
-   - `PORT`: `10000`
-   - `API_SERVER_KEY`: Una contraseña secreta inventada por ti.
-   - `TELEGRAM_BOT_TOKEN` *(opcional)*: Token de tu bot creado con `@BotFather` en Telegram.
-   - `TELEGRAM_ALLOWED_USERS` *(opcional)*: Tu ID numérico de Telegram obtenido con `@userinfobot`.
-6. Haz clic en **Create Web Service**. Espera 2–3 minutos hasta que el estado esté en verde (**Live**).
+👉 **[Leer el Manual Completo de Instalación Paso a Paso (Español)](docs/MANUAL_HERMES_RENDER.md#-manual-en-español)**
 
-### Paso 3: ¡Empieza a Chatear!
-- **Desde el Navegador**: Entra en `https://tu-servicio.onrender.com` desde tu móvil o PC. Introduce tu contraseña `API_SERVER_KEY` y chatea al instante.
-- **Desde Telegram**: Abre Telegram, busca tu bot, pulsa en **Iniciar** y envíale cualquier pregunta.
+### Qué encontrarás en el manual:
+1. **Visión General y Requisitos**: Cómo interactúan Hermes Agent, Render y OpenRouter sin coste.
+2. **Paso 1: Clave Gratuita de OpenRouter**: Obtención de credenciales con saldo $0 y sin tarjeta bancaria.
+3. **Paso 2: Bot Privado de Telegram**: Configuración en 1 minuto con `@BotFather` y bloqueo seguro por tu ID.
+4. **Paso 3: Despliegue en Render.com**:
+   - **Opción A (Recomendada)**: Conectar este repositorio de GitHub (Render detecta automáticamente el `Dockerfile` de la raíz e incluye `chat.html`).
+   - **Opción B**: Despliegue mediante Blueprint (`render.yaml`).
+   - **Opción C**: Imagen precompilada directa.
+   - Tabla completa de variables de entorno explicadas una a una.
+5. **Paso 4: Chat Web en el Servidor (`chat.html`)**: Acceso directo desde cualquier navegador en `https://tu-servicio.onrender.com`.
+6. **Paso 5: Clientes Alternativos (`chat_web.html` y NextChat)**.
+7. **Catálogo de Modelos Gratuitos (`:free`)**: Llama 3.3 70B, Gemini 2.0 Flash Lite, DeepSeek R1, Qwen 2.5 Coder.
+8. **Mantener el Servidor Activo 24/7**: Truco con cron-job gratuito para evitar que Render suspenda la instancia.
+9. **Resolución de Dudas y Preguntas Frecuentes**.
+
+👉 **[Abrir Presentación Interactiva (presentation.html)](web/presentation.html)** (Con soporte táctil, cambio instantáneo de idioma y descarga de archivos).
 
 ---
 

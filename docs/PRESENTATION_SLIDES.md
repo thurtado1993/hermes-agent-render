@@ -86,7 +86,7 @@ style: |
 
 1. Sign up on **[render.com](https://render.com)**.
 2. In Dashboard, click **+ New** ➔ **Web Service**.
-3. Connect this GitHub repo (uses `deploy/Dockerfile`) or pick **Existing Image**:
+3. Connect this GitHub repo (Render automatically detects the root `Dockerfile`) or pick **Existing Image**:
    ```text
    docker.io/nousresearch/hermes-agent:latest
    ```
@@ -220,7 +220,7 @@ Switch models anytime by changing `MODEL_NAME` in Render:
 
 1. Regístrate en **[render.com](https://render.com)**.
 2. En el panel, pulsa en **+ New** ➔ **Web Service**.
-3. Conecta este repositorio (usa `deploy/Dockerfile`) o elige **Existing Image**:
+3. Conecta este repositorio de GitHub (Render detecta automáticamente el `Dockerfile` en la raíz) o elige **Existing Image**:
    ```text
    docker.io/nousresearch/hermes-agent:latest
    ```

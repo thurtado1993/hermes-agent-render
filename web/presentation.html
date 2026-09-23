@@ -872,9 +872,9 @@
             <div class="step-num">02</div>
             <div class="step-body">
               <h4 data-en="New Web Service" data-es="Crear nuevo Web Service">New Web Service</h4>
-              <p data-en="Click '+ New' ➔ 'Web Service'. Pick 'Existing Image' (or connect your GitHub repository to use deploy/Dockerfile)."
-                 data-es="Pulsa en '+ New' ➔ 'Web Service'. Elige 'Existing Image' (o conecta tu repo de GitHub con deploy/Dockerfile).">
-                Click '+ New' ➔ 'Web Service'. Pick 'Existing Image' (or connect your GitHub repository to use deploy/Dockerfile).
+              <p data-en="Click '+ New' ➔ 'Web Service'. Connect your GitHub repository (Render will automatically detect the root Dockerfile)."
+                 data-es="Pulsa en '+ New' ➔ 'Web Service'. Conecta tu repositorio de GitHub (Render detectará automáticamente el Dockerfile en la raíz).">
+                Click '+ New' ➔ 'Web Service'. Connect your GitHub repository (Render will automatically detect the root Dockerfile).
               </p>
             </div>
           </div>
@@ -1364,7 +1364,7 @@
   - type: web
     name: hermes-agent-free
     env: docker
-    dockerfilePath: deploy/Dockerfile
+    dockerfilePath: Dockerfile
     plan: free
     region: frankfurt
     envVars:
