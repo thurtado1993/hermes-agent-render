@@ -3,7 +3,7 @@
 [![Render](https://img.shields.io/badge/Render-Free%20Tier-46E3B7?logo=render&logoColor=white)](https://render.com)
 [![OpenRouter](https://img.shields.io/badge/OpenRouter-Free%20Models-6366F1?logo=openai&logoColor=white)](https://openrouter.ai)
 [![Hermes Agent](https://img.shields.io/badge/NousResearch-Hermes%20Agent-38BDF8)](https://hermes-agent.nousresearch.com)
-[![Design](https://img.shields.io/badge/Design-Swiss%20Modernist-00f0ff)](https://seunghyuk.com/?ref=siteinspire)
+[![Live Presentation](https://img.shields.io/badge/Live%20Presentation-Interactive%20Slide%20Deck-00f0ff?logo=safari&logoColor=white)](https://thurtado1993.github.io/hermes-agent-render/web/presentation.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > **Deploy your personal, persistent, autonomous AI assistant in the cloud for $0/month, powered by Nous Research's Hermes Agent and OpenRouter's free-tier models (`:free`).**
@@ -90,7 +90,7 @@ The full, foolproof setup guide covers everything from obtaining free API keys t
 8. **24/7 Keep-Alive**: How to keep Render free tier awake permanently with free pings.
 9. **Troubleshooting & FAQ**: Common deployment questions and fixes.
 
-👉 **[View Interactive Swiss Modernist Presentation](web/presentation.html)** (Supports touch gestures, language switch, and file copy).
+👉 **[🚀 Open Live Interactive Presentation in Browser](https://thurtado1993.github.io/hermes-agent-render/web/presentation.html)** *(Renders live in your browser with touch swipe gestures, language toggle, and copy tools)*.
 
 ---
 
@@ -177,7 +177,7 @@ La guía completa y detallada paso a paso para cualquier usuario (entienda o no 
 8. **Mantener el Servidor Activo 24/7**: Truco con cron-job gratuito para evitar que Render suspenda la instancia.
 9. **Resolución de Dudas y Preguntas Frecuentes**.
 
-👉 **[Abrir Presentación Interactiva (presentation.html)](web/presentation.html)** (Con soporte táctil, cambio instantáneo de idioma y descarga de archivos).
+👉 **[🚀 Abrir Presentación Interactiva en Vivo en el Navegador](https://thurtado1993.github.io/hermes-agent-render/web/presentation.html)** *(Se ejecuta directamente en tu navegador con gestos táctiles, selector de idioma y descarga de archivos)*.
 
 ---
 

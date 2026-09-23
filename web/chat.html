@@ -504,11 +504,7 @@
 
     <div class="header-actions">
       <select class="model-selector" id="modelSelect">
-        <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (Recommended)</option>
-        <option value="google/gemini-2.0-flash-lite:free">Gemini 2.0 Flash Lite</option>
-        <option value="deepseek/deepseek-r1:free">DeepSeek R1 (Reasoning)</option>
-        <option value="qwen/qwen-2.5-coder-32b-instruct:free">Qwen 2.5 Coder 32B</option>
-        <option value="openrouter/free">Auto Free Router</option>
+        <option value="openrouter/free" selected>⚡ Auto Free Router (Default / Recommended)</option>
       </select>
 
       <button class="btn-swiss" onclick="openKeyModal()">KEY ⚙</button>
@@ -574,10 +570,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const storedKey = localStorage.getItem('hermes_server_key') || '';
-      const storedModel = localStorage.getItem('hermes_server_model') || 'meta-llama/llama-3.3-70b-instruct:free';
-      
       apiKeyField.value = storedKey;
-      modelSelect.value = storedModel;
 
       const host = window.location.hostname || 'localhost';
       originTag.textContent = `HOST : ${host.toUpperCase()}`;
@@ -585,11 +578,90 @@
       if (!storedKey) {
         openKeyModal();
       }
+
+      fetchDynamicModels();
     });
 
     modelSelect.addEventListener('change', () => {
       localStorage.setItem('hermes_server_model', modelSelect.value);
     });
+
+    async function fetchDynamicModels() {
+      const storageKey = 'hermes_server_model';
+      const savedModel = localStorage.getItem(storageKey) || 'openrouter/free';
+
+      const targetCompanies = [
+        { label: 'GOOGLE', match: id => id.startsWith('google/') },
+        { label: 'NVIDIA', match: id => id.startsWith('nvidia/') },
+        { label: 'DEEPSEEK', match: id => id.startsWith('deepseek/') },
+        { label: 'QWEN', match: id => id.startsWith('qwen/') },
+        { label: 'META / OLLAMA', match: id => id.startsWith('meta-llama/') || id.startsWith('meta/') || id.startsWith('ollama/') }
+      ];
+
+      try {
+        const res = await fetch('https://openrouter.ai/api/v1/models');
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        const data = await res.json();
+        const allModels = data.data || [];
+
+        const freeModels = allModels.filter(m => {
+          const isFree = m.id.endsWith(':free') || 
+                         (m.pricing && m.pricing.prompt === '0' && m.pricing.completion === '0') ||
+                         m.id === 'openrouter/free';
+          if (!isFree) return false;
+          if (m.id.includes('content-safety')) return false;
+          return targetCompanies.some(c => c.match(m.id));
+        });
+
+        // Always keep Auto Free Router as option #1 and default
+        modelSelect.innerHTML = '<option value="openrouter/free" selected>⚡ Auto Free Router (Default / Recommended)</option>';
+
+        targetCompanies.forEach(comp => {
+          const matches = freeModels.filter(m => comp.match(m.id));
+          if (matches.length > 0) {
+            const group = document.createElement('optgroup');
+            group.label = `// ${comp.label}`;
+            matches.forEach(m => {
+              const opt = document.createElement('option');
+              opt.value = m.id;
+              let name = (m.name || m.id).replace(/:\s*free\b/i, '').trim();
+              opt.textContent = `${name} (:free)`;
+              group.appendChild(opt);
+            });
+            modelSelect.appendChild(group);
+          }
+        });
+
+        const exists = Array.from(modelSelect.options).some(o => o.value === savedModel);
+        modelSelect.value = exists ? savedModel : 'openrouter/free';
+
+      } catch (err) {
+        console.warn('OpenRouter dynamic model fetch failed, using fallback list:', err);
+        modelSelect.innerHTML = `
+          <option value="openrouter/free" selected>⚡ Auto Free Router (Default / Recommended)</option>
+          <optgroup label="// GOOGLE">
+            <option value="google/gemma-4-31b-it:free">Google: Gemma 4 31B (:free)</option>
+            <option value="google/gemma-4-26b-a4b-it:free">Google: Gemma 4 26B (:free)</option>
+          </optgroup>
+          <optgroup label="// NVIDIA">
+            <option value="nvidia/nemotron-3.5-lightning:free">NVIDIA: Nemotron 3.5 Lightning (:free)</option>
+            <option value="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free">NVIDIA: Nemotron 3 Nano Omni (:free)</option>
+            <option value="nvidia/nemotron-3-super-120b-a12b:free">NVIDIA: Nemotron 3 Super (:free)</option>
+          </optgroup>
+          <optgroup label="// QWEN">
+            <option value="qwen/qwen3.8-27b:free">Qwen: Qwen3.8 27B (:free)</option>
+          </optgroup>
+          <optgroup label="// DEEPSEEK">
+            <option value="deepseek/deepseek-r1:free">DeepSeek: R1 (:free)</option>
+          </optgroup>
+          <optgroup label="// META / OLLAMA">
+            <option value="meta-llama/llama-3.3-70b-instruct:free">Meta: Llama 3.3 70B (:free)</option>
+          </optgroup>
+        `;
+        const exists = Array.from(modelSelect.options).some(o => o.value === savedModel);
+        modelSelect.value = exists ? savedModel : 'openrouter/free';
+      }
+    }
 
     function openKeyModal() {
       keyModal.classList.add('open');
