@@ -858,6 +858,14 @@
           SAVE CONFIGURATION ➔
         </button>
 
+        <div class="sec-index">04 // REMOTE DASHBOARD</div>
+        <div style="font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.4rem;">
+          Accede al panel de control de tu servidor Hermes para configurar MCP, skills, tareas cron y ver logs en vivo.
+        </div>
+        <a id="linkServerDashboard" href="#" target="_blank" class="btn-swiss primary" style="text-decoration: none; text-align: center; width: 100%; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+          🎛 ABRIR REMOTE DASHBOARD ➔
+        </a>
+
         <div class="health-rack">
           <span>GATEWAY_STATUS</span>
           <div class="health-status">
@@ -881,7 +889,8 @@
         <span>SESSION // <span class="channel-tag" id="currentSessionTitle">Default Session</span></span>
       </div>
 
-      <div style="display: flex; gap: 0.5rem;">
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <a id="btnRemoteDashboard" href="#" target="_blank" class="btn-swiss primary" style="text-decoration: none;" title="Open Remote Hermes Web Dashboard">🎛 DASHBOARD</a>
         <button class="btn-swiss" onclick="startNewSession()">+ NEW</button>
         <button class="btn-swiss" onclick="clearCurrentSession()">CLEAR CHAT</button>
       </div>
@@ -922,6 +931,8 @@
     const activeModelSelect = document.getElementById('activeModelSelect');
     const messageArena = document.getElementById('messageArena');
     const btnScrollBottom = document.getElementById('btnScrollBottom');
+    const btnRemoteDashboard = document.getElementById('btnRemoteDashboard');
+    const linkServerDashboard = document.getElementById('linkServerDashboard');
     const promptTextarea = document.getElementById('promptTextarea');
     const submitBtn = document.getElementById('submitBtn');
     const sidebar = document.getElementById('sidebar');
@@ -932,11 +943,19 @@
     let sessions = [];
     let activeSessionId = null;
 
+    function updateDashboardLinks() {
+      const base = (serverUrlInput.value || '').trim().replace(/\/+$/, '');
+      const dashUrl = base ? `${base}/dashboard` : '#';
+      if (btnRemoteDashboard) btnRemoteDashboard.href = dashUrl;
+      if (linkServerDashboard) linkServerDashboard.href = dashUrl;
+    }
+
     // Initialization
     window.addEventListener('DOMContentLoaded', () => {
       serverUrlInput.value = localStorage.getItem(SERVER_URL_STORAGE) || '';
       serverKeyInput.value = localStorage.getItem(SERVER_KEY_STORAGE) || '';
 
+      updateDashboardLinks();
       loadSessions();
       fetchDynamicModels();
     });
@@ -1187,6 +1206,8 @@
       localStorage.setItem(SERVER_URL_STORAGE, url);
       localStorage.setItem(SERVER_KEY_STORAGE, key);
       localStorage.setItem(MODEL_STORAGE, model);
+
+      updateDashboardLinks();
 
       const session = getActiveSession();
       if (session) {

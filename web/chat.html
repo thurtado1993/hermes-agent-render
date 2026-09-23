@@ -871,6 +871,22 @@
               CONNECTED : $0/MO
             </div>
           </div>
+
+          <div class="sec-index">04 // ADVANCED MANAGEMENT</div>
+          <div style="font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.4rem;">
+            Panel de control oficial para configurar MCP, skills, tareas cron, editar config.yaml y ver logs en vivo.
+          </div>
+          <a href="/dashboard" class="btn-swiss primary" style="text-decoration: none; text-align: center; width: 100%; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+            🎛 ABRIR WEB DASHBOARD ➔
+          </a>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem;">
+            <a href="/config" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">⚙ Config.yaml</a>
+            <a href="/skills" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">🧩 Skills</a>
+            <a href="/mcp" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">🔌 MCP Servers</a>
+            <a href="/logs" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">📜 Logs</a>
+            <a href="/cron" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">⏰ Cron</a>
+            <a href="/analytics" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">📊 Analítica</a>
+          </div>
         </div>
       </div>
 
@@ -887,7 +903,8 @@
           <span>SESSION // <span class="channel-tag" id="currentSessionTitle">Default Session</span></span>
         </div>
 
-        <div style="display: flex; gap: 0.5rem;">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <a href="/dashboard" class="btn-swiss primary" style="text-decoration: none;" title="Open Official Hermes Web Dashboard">🎛 DASHBOARD</a>
           <button class="btn-swiss" onclick="startNewSession()">+ NEW</button>
           <button class="btn-swiss" onclick="clearCurrentSession()">CLEAR CHAT</button>
         </div>

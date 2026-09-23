@@ -91,9 +91,25 @@ if [ "$GATEWAY_READY" = false ]; then
   echo "[*] Web Proxy will use resilient direct upstream fallback for chat completions."
 fi
 
-echo "[*] Starting On-Server Web Chat proxy on port ${PORT:-10000}..."
+# ==========================================================
+# Start Official Hermes Web Dashboard (Port 9119)
+# ==========================================================
+echo "[*] Starting Hermes Web Dashboard on port 9119 (logging to /tmp/hermes-dashboard.log)..."
+(hermes dashboard --host 127.0.0.1 --port 9119 --no-open > /tmp/hermes-dashboard.log 2>&1) &
+DASHBOARD_PID=$!
+
+echo "[*] Dashboard PID: $DASHBOARD_PID. Checking Dashboard (port 9119)..."
+for i in $(seq 1 10); do
+  if python3 -c "import socket; s = socket.socket(); s.connect(('127.0.0.1', 9119)); s.close()" 2>/dev/null; then
+    echo "[✓] Hermes Web Dashboard listening on 127.0.0.1:9119! (Ready in ${i}s)"
+    break
+  fi
+  sleep 1
+done
+
+echo "[*] Starting On-Server Web Chat & Unified Proxy on port ${PORT:-10000}..."
 python3 /opt/hermes/deploy/server.py &
 PROXY_PID=$!
 
-trap "kill $HERMES_PID $PROXY_PID 2>/dev/null || true" SIGINT SIGTERM
+trap "kill $HERMES_PID $DASHBOARD_PID $PROXY_PID 2>/dev/null || true" SIGINT SIGTERM
 wait -n

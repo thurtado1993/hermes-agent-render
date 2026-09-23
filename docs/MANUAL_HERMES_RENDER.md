@@ -27,34 +27,38 @@
 5. [Step 3: Deploy the Server on Render.com](#step-3-deploy-the-server-on-rendercom)
 6. [Step 4: Using the On-Server Web Chat (`chat.html`)](#step-4-using-the-on-server-web-chat-chathtml)
 7. [Step 5: Alternative Web Clients (`chat_web.html` & NextChat)](#step-5-alternative-web-clients-chat_webhtml--nextchat)
-8. [Free Models Catalog (`:free`)](#free-models-catalog-free)
-9. [Keeping Your Free Server Awake 24/7](#keeping-your-free-server-awake-247)
-10. [Troubleshooting & FAQ](#troubleshooting--faq)
+8. [Step 6: Hermes Web Dashboard (`/dashboard`)](#step-6-hermes-web-dashboard-dashboard)
+9. [Free Models Catalog (`:free`)](#free-models-catalog-free)
+10. [Keeping Your Free Server Awake 24/7](#keeping-your-free-server-awake-247)
+11. [Troubleshooting & FAQ](#troubleshooting--faq)
 
 ---
 
 ### 1. Architecture Overview
 
 ```
-+------------------------------------+
-|   Your Client Device               |
-|   (Browser / Phone / Telegram)     |
-+-----------------+------------------+
-                  |  HTTPS Requests (chat.html / Telegram API)
-                  v
-+-----------------+------------------+
-|   Render.com (Free Web Service)    |
-|   - Reverse Proxy (:10000)         |
-|     --> Serves chat.html at '/'    |
-|     --> Proxies '/v1/*' to Gateway |
-|   - Hermes Agent Gateway (:8642)   |
-+-----------------+------------------+
-                  |  Inference API Calls
-                  v
-+-----------------+------------------+
-|   OpenRouter.ai (:free models)     |
-|   - Llama 3.3 70B, Gemini Flash    |
-+------------------------------------+
++-------------------------------------------------------------+
+|   Your Client Device                                        |
+|   (Browser Chat / Web Dashboard / Desktop App / Telegram)   |
++------------------------------+------------------------------+
+                               |  HTTPS & WebSockets
+                               v
++------------------------------+------------------------------+
+|   Render.com (Free Web Service - Port :10000)               |
+|   - Reverse Proxy & Tunnel (deploy/server.py)               |
+|     --> Serves Swiss Chat UI at '/'                         |
+|     --> Proxies '/dashboard' & SPA to Dashboard (:9119)     |
+|     --> WS Raw TCP Tunnel for '/api/ws' & '/api/pty'        |
+|     --> Proxies '/v1/*' to Gateway (:8642)                  |
+|   - Official Hermes Web Dashboard (:9119)                   |
+|   - Hermes Agent Gateway & Runtime (:8642)                  |
++------------------------------+------------------------------+
+                               |  Inference API Calls
+                               v
++------------------------------+------------------------------+
+|   OpenRouter.ai (:free models)                              |
+|   - Llama 3.3 70B, Gemini 2.0 Flash Lite, DeepSeek R1, Qwen |
++-------------------------------------------------------------+
 ```
 
 ---
@@ -127,6 +131,8 @@ Add the following keys under the **Environment Variables** section:
 | `API_SERVER_KEY` | *(Your secret password)* | Protects access to the API |
 | `TELEGRAM_BOT_TOKEN` | *(From @BotFather)* | Enables mobile Telegram bot |
 | `TELEGRAM_ALLOWED_USERS`| *(Your numeric Telegram ID)* | Restricts bot to your account only |
+| `HERMES_DASHBOARD_BASIC_AUTH_USERNAME` | *(Optional username, e.g. admin)* | Enables HTTP Basic Auth on dashboard |
+| `HERMES_DASHBOARD_BASIC_AUTH_PASSWORD` | *(Optional password)* | Dashboard HTTP Basic Auth password |
 
 Click **Create Web Service**. After 2–3 minutes, the status badge will turn green (**Live**).
 
@@ -157,6 +163,37 @@ If deployed using our repository's `Dockerfile`:
 - Go to Settings ➔ Provider: **Custom / OpenAI**.
 - Endpoint: `https://your-service.onrender.com/v1`.
 - API Key: Your `API_SERVER_KEY`.
+
+---
+
+### Step 6: Hermes Web Dashboard (`/dashboard`)
+
+For advanced users who want full visual control over their Hermes Agent configuration, tools, and background processes:
+
+#### 1. Accessing the Dashboard
+- **Direct Link**: Visit `https://your-service.onrender.com/dashboard` in any browser.
+- **Shortcut Button**: Click the `[ 🎛 DASHBOARD ]` button in the header of `chat.html` or `chat_web.html`.
+- **Drawer Links**: Open the `[ SETTINGS ]` drawer in `chat.html` to jump directly into specific panels (Config, Skills, MCP, Logs, Cron, Analytics).
+
+#### 2. Features & Management Panels
+The official Hermes Web Dashboard runs on internal port `9119` and is routed seamlessly by the built-in reverse proxy with full WebSocket and PTY terminal support:
+- **Config Editor (`/config`)**: Visually inspect and edit your active `config.yaml` without opening a terminal. Change providers, toggle tools, adjust context parameters, and update system prompts.
+- **Skills Manager (`/skills`)**: Browse installed skills, inspect user-created abilities, enable/disable tools, and write custom skill manifests.
+- **MCP Servers (`/mcp`)**: Add, test, and manage external Model Context Protocol integrations (filesystem, database, web tools).
+- **Scheduled Jobs & Cron (`/cron`)**: Schedule recurring automated agent actions, reminders, and self-directed routines.
+- **Live Logs & Stream (`/logs`)**: Watch real-time agent execution logs, tool call arguments, outputs, and stack traces.
+- **Interactive Terminal PTY (`/terminal` via `/api/pty`)**: Direct shell access inside your container right from the browser via xterm.js over WebSockets.
+- **Sessions & Chat Archive (`/sessions`)**: Inspect all past agent conversations, memory dumps, and message history.
+- **Token Analytics & Usage (`/analytics`)**: Track prompt and completion tokens, estimated costs, and model performance.
+- **Webhooks & Channel Hub**: Configure Discord, Slack, and custom webhooks for event notifications.
+
+#### 3. Connecting Hermes Desktop App Remotely
+If you use the native [Hermes Desktop](https://hermes-agent.nousresearch.com/docs/user-guide/features/desktop) application on macOS, Windows, or Linux:
+1. Open Hermes Desktop ➔ Settings ➔ **Connection**.
+2. Select **Remote Server**.
+3. Set Server URL: `https://your-service.onrender.com`.
+4. Enter your `API_SERVER_KEY`.
+5. The desktop app connects seamlessly through the reverse proxy's WebSocket tunnel (`/api/ws`).
 
 ---
 
@@ -199,15 +236,17 @@ Render's free tier idles after 15 minutes of inactivity. To eliminate cold start
 5. [Paso 3: Desplegar el Servidor en Render.com](#paso-3-desplegar-el-servidor-en-rendercom)
 6. [Paso 4: Usar el Chat Web en el Servidor (`chat.html`)](#paso-4-usar-el-chat-web-en-el-servidor-chathtml)
 7. [Paso 5: Clientes Web Alternativos (`chat_web.html` y NextChat)](#paso-5-clientes-web-alternativos-chat_webhtml-y-nextchat)
-8. [Catálogo de Modelos Gratuitos (`:free`)](#catálogo-de-modelos-gratuitos-free)
-9. [Mantener el Servidor Despierto 24/7](#mantener-el-servidor-despierto-247)
-10. [Preguntas Frecuentes y Resolución de Problemas](#preguntas-frecuentes-y-resolución-de-problemas)
+8. [Paso 6: Panel de Control Web de Hermes (`/dashboard`)](#paso-6-panel-de-control-web-de-hermes-dashboard)
+9. [Catálogo de Modelos Gratuitos (`:free`)](#catálogo-de-modelos-gratuitos-free)
+10. [Mantener el Servidor Despierto 24/7](#mantener-el-servidor-despierto-247)
+11. [Preguntas Frecuentes y Resolución de Problemas](#preguntas-frecuentes-y-resolución-de-problemas)
 
 ---
 
 ### 1. Visión General de la Arquitectura
 
 * **Hermes Agent**: Cerebro autónomo con memoria persistente desarrollado por Nous Research.
+* **Hermes Web Dashboard**: Panel de control oficial para administrar habilidades, MCP, configuración, cron jobs y logs.
 * **OpenRouter**: Acceso a modelos potentes con coste cero (`:free`).
 * **Render.com**: Servidor en la nube gratuito 24/7 sin tarjeta bancaria.
 * **chat.html**: Interfaz web integrada en tu propio dominio de Render.
@@ -277,6 +316,8 @@ Añade las siguientes claves en la sección **Environment Variables**:
 | `API_SERVER_KEY` | *(Tu contraseña secreta)* | Protege el acceso al servidor y chat |
 | `TELEGRAM_BOT_TOKEN` | *(Opcional, de @BotFather)* | Habilita el bot móvil de Telegram |
 | `TELEGRAM_ALLOWED_USERS`| *(Opcional, ID numérico)* | Restringe el bot únicamente a tu usuario |
+| `HERMES_DASHBOARD_BASIC_AUTH_USERNAME` | *(Opcional, ej. admin)* | Usuario para autenticación básica en dashboard |
+| `HERMES_DASHBOARD_BASIC_AUTH_PASSWORD` | *(Opcional)* | Contraseña para autenticación en dashboard |
 
 Haz clic en **Create Web Service**. Espera 2–3 minutos hasta ver la etiqueta verde **Live**.
 
@@ -302,6 +343,37 @@ Haz doble clic sobre `web/chat_web.html` en tu ordenador, introduce la URL de Re
 
 #### 2. NextChat Web
 Entra en **[https://app.nextchat.dev/](https://app.nextchat.dev/)**, ve a Ajustes ➔ Custom OpenAI, y pon tu URL de Render (`https://tu-servicio.onrender.com/v1`) con tu contraseña.
+
+---
+
+### Paso 6: Panel de Control Web de Hermes (`/dashboard`)
+
+Para usuarios avanzados que deseen un control visual total sobre la configuración de Hermes, herramientas, extensiones y procesos en segundo plano:
+
+#### 1. Cómo Acceder al Dashboard
+- **Enlace directo**: Abre en cualquier navegador `https://tu-servicio.onrender.com/dashboard`.
+- **Botón directo**: Pulsa el botón `[ 🎛 DASHBOARD ]` en la barra superior de `chat.html` o `chat_web.html`.
+- **Accesos desde Ajustes**: Abre el panel `[ SETTINGS ]` en `chat.html` para acceder con un clic a Configuración, Habilidades, MCP, Registros o Tareas Cron.
+
+#### 2. Módulos y Paneles de Gestión Disponibles
+El Dashboard oficial de Hermes funciona internamente en el puerto `9119` y es expuesto fluidamente por el servidor proxy inverso con soporte completo de WebSockets y emulación de terminal PTY:
+- **Editor de Configuración (`/config`)**: Inspecciona y edita visualmente tu `config.yaml` sin tocar la consola. Cambia proveedores, activa o desactiva herramientas, amplía la ventana de contexto o modifica los prompts de sistema.
+- **Gestor de Habilidades (`/skills`)**: Explora las habilidades instaladas, visualiza las destrezas creadas por el agente, habilita/deshabilita funciones y programa nuevas skills.
+- **Servidores MCP (`/mcp`)**: Añade, prueba y monitoriza integraciones del Model Context Protocol (bases de datos, sistema de ficheros, APIs externas).
+- **Tareas Programadas / Cron (`/cron`)**: Programa acciones recurrentes, recordatorios y rutinas automatizadas para que el agente trabaje de forma autónoma.
+- **Registros en Tiempo Real (`/logs`)**: Visualiza en vivo la ejecución de llamadas a herramientas, argumentos, salidas y trazas de depuración.
+- **Terminal Web Integrada (`/terminal` vía `/api/pty`)**: Accede a una consola interactiva dentro del contenedor directamente desde el navegador con xterm.js sobre WebSocket.
+- **Historial de Sesiones (`/sessions`)**: Consulta conversaciones anteriores, volcado de memoria y estado del contexto.
+- **Métricas y Consumo de Tokens (`/analytics`)**: Supervisa tokens de entrada y salida, estimación de costes y rendimiento.
+- **Canales y Webhooks**: Configura alertas hacia Discord, Slack o webhooks personalizados.
+
+#### 3. Conectar la App Nativa Hermes Desktop
+Si utilizas la aplicación de escritorio [Hermes Desktop](https://hermes-agent.nousresearch.com/docs/user-guide/features/desktop) en Windows, macOS o Linux:
+1. Abre Hermes Desktop ➔ Ajustes ➔ **Connection**.
+2. Selecciona **Remote Server**.
+3. Indica la URL del servidor: `https://tu-servicio.onrender.com`.
+4. Introduce tu `API_SERVER_KEY`.
+5. La aplicación de escritorio se conectará a través del túnel de WebSocket (`/api/ws`) integrado en Render.
 
 ---
 
