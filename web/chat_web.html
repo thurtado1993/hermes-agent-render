@@ -433,12 +433,15 @@
 
     /* Main Workspace Arena */
     main {
-      flex: 1;
+      flex: 1 1 0%;
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
       min-width: 0;
+      min-height: 0;
+      height: 100%;
+      max-height: 100%;
     }
 
     .top-controls-bar {
@@ -487,15 +490,44 @@
 
     /* Message Arena */
     .message-arena {
-      flex: 1;
+      flex: 1 1 0%;
+      min-height: 0;
+      height: 0;
       overflow-y: auto;
-      padding: 2rem;
+      overflow-x: hidden;
+      overscroll-behavior-y: contain;
+      padding: 1.75rem 2rem 2.5rem 2rem;
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
-      scroll-behavior: smooth;
       scrollbar-width: thin;
-      scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+      scrollbar-color: rgba(0, 240, 255, 0.45) rgba(7, 9, 14, 0.7);
+    }
+
+    /* Precision Swiss Scrollbar for Message Arena & Tab Panes */
+    .message-arena::-webkit-scrollbar,
+    .tab-pane::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .message-arena::-webkit-scrollbar-track,
+    .tab-pane::-webkit-scrollbar-track {
+      background: rgba(7, 9, 14, 0.7);
+      border-left: 1px solid var(--border);
+    }
+
+    .message-arena::-webkit-scrollbar-thumb,
+    .tab-pane::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.28);
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .message-arena::-webkit-scrollbar-thumb:hover,
+    .tab-pane::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
     }
 
     .msg-unit {
@@ -509,6 +541,7 @@
       position: relative;
       animation: fadeInMsg 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       backdrop-filter: blur(12px);
+      flex-shrink: 0;
     }
 
     @keyframes fadeInMsg {
@@ -572,9 +605,69 @@
       padding: 0.85rem 1rem;
       margin: 0.75rem 0;
       overflow-x: auto;
+      overflow-y: hidden;
       font-family: var(--mono);
       font-size: 0.84rem;
       color: #f8fafc;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 240, 255, 0.35) rgba(4, 6, 10, 0.8);
+    }
+
+    .msg-body pre::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .msg-body pre::-webkit-scrollbar-track {
+      background: rgba(4, 6, 10, 0.8);
+    }
+
+    .msg-body pre::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .msg-body pre::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+    /* Jump to Bottom Floating Action */
+    .btn-scroll-bottom {
+      position: absolute;
+      bottom: 88px;
+      right: 2rem;
+      background: rgba(11, 15, 25, 0.94);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.4rem 0.85rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      border-radius: 2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 10px rgba(0, 240, 255, 0.25);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 25;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-scroll-bottom.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .btn-scroll-bottom:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.45);
     }
 
     /* Input Dock */
@@ -798,6 +891,10 @@
       <!-- Messages rendered dynamically -->
     </div>
 
+    <button id="btnScrollBottom" class="btn-scroll-bottom" title="Scroll to bottom" onclick="scrollToBottom(true)">
+      ↓ LATEST
+    </button>
+
     <div class="input-dock">
       <div class="input-canvas">
         <textarea id="promptTextarea" placeholder="Enter prompt or task instruction..."></textarea>
@@ -824,6 +921,7 @@
     const serverKeyInput = document.getElementById('serverKeyInput');
     const activeModelSelect = document.getElementById('activeModelSelect');
     const messageArena = document.getElementById('messageArena');
+    const btnScrollBottom = document.getElementById('btnScrollBottom');
     const promptTextarea = document.getElementById('promptTextarea');
     const submitBtn = document.getElementById('submitBtn');
     const sidebar = document.getElementById('sidebar');
@@ -956,10 +1054,12 @@
       }
 
       session.messages.forEach(msg => {
-        insertBubble(msg.role, msg.content, msg.timestamp || '');
+        insertBubble(msg.role, msg.content, msg.timestamp || '', false);
       });
 
-      messageArena.scrollTop = messageArena.scrollHeight;
+      requestAnimationFrame(() => {
+        messageArena.scrollTop = messageArena.scrollHeight;
+      });
     }
 
     function renderWelcomeCard() {
@@ -1230,11 +1330,11 @@
       saveSessions();
       renderSessionList();
 
-      insertBubble('user', prompt, userTimestamp);
+      insertBubble('user', prompt, userTimestamp, true);
       promptTextarea.value = '';
       submitBtn.disabled = true;
 
-      const botElement = insertBubble('bot', 'Processing query...', 'WAITING');
+      const botElement = insertBubble('bot', 'Processing query...', 'WAITING', true);
 
       try {
         const messagesPayload = [
@@ -1281,6 +1381,7 @@
 
         botElement.querySelector('.msg-body').textContent = text;
         botElement.querySelector('.msg-meta-bar span:last-child').textContent = botTimestamp;
+        scrollToBottomIfNear(true);
 
         // Save bot response to session
         session.messages.push({
@@ -1345,13 +1446,14 @@
           transmitMessage();
         };
         bodyEl.appendChild(retryBtn);
+        scrollToBottomIfNear(true);
       } finally {
         submitBtn.disabled = false;
         promptTextarea.focus();
       }
     }
 
-    function insertBubble(role, text, timeStr) {
+    function insertBubble(role, text, timeStr, autoScroll = true) {
       const unit = document.createElement('div');
       unit.className = `msg-unit ${role}`;
 
@@ -1370,9 +1472,42 @@
       unit.appendChild(body);
       messageArena.appendChild(unit);
 
-      messageArena.scrollTop = messageArena.scrollHeight;
+      if (autoScroll) {
+        scrollToBottom(false);
+      }
       return unit;
     }
+
+    function scrollToBottom(smooth = false) {
+      requestAnimationFrame(() => {
+        if (smooth) {
+          messageArena.scrollTo({
+            top: messageArena.scrollHeight,
+            behavior: 'smooth'
+          });
+        } else {
+          messageArena.scrollTop = messageArena.scrollHeight;
+        }
+      });
+    }
+
+    function scrollToBottomIfNear(smooth = true) {
+      const threshold = 180;
+      const isNearBottom = (messageArena.scrollHeight - messageArena.scrollTop - messageArena.clientHeight) <= threshold;
+      if (isNearBottom) {
+        scrollToBottom(smooth);
+      }
+    }
+
+    // Floating Scroll-To-Bottom Handler
+    messageArena.addEventListener('scroll', () => {
+      const scrollGap = messageArena.scrollHeight - messageArena.scrollTop - messageArena.clientHeight;
+      if (scrollGap > 220) {
+        btnScrollBottom.classList.add('visible');
+      } else {
+        btnScrollBottom.classList.remove('visible');
+      }
+    });
   </script>
 </body>
 </html>
