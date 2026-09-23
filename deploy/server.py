@@ -29,9 +29,17 @@ CHAT_HTML_PATH = os.path.join(BASE_DIR, "../web/chat.html")
 if not os.path.exists(CHAT_HTML_PATH):
     CHAT_HTML_PATH = "/opt/hermes/web/chat.html"
 
+CHAT_WEB_HTML_PATH = os.path.join(BASE_DIR, "../web/chat_web.html")
+if not os.path.exists(CHAT_WEB_HTML_PATH):
+    CHAT_WEB_HTML_PATH = "/opt/hermes/web/chat_web.html"
+
 PRESENTATION_HTML_PATH = os.path.join(BASE_DIR, "../web/presentation.html")
 if not os.path.exists(PRESENTATION_HTML_PATH):
     PRESENTATION_HTML_PATH = "/opt/hermes/web/presentation.html"
+
+DOCS_HTML_PATH = os.path.join(BASE_DIR, "../docs/index.html")
+if not os.path.exists(DOCS_HTML_PATH):
+    DOCS_HTML_PATH = "/opt/hermes/docs/index.html"
 
 DASHBOARD_ROUTES = (
     "/dashboard",
@@ -108,8 +116,14 @@ class HermesProxyHandler(http.server.BaseHTTPRequestHandler):
         if clean_path in ("", "/index.html", "/chat", "/chat.html"):
             self.serve_chat_html()
             return
+        elif clean_path in ("/chat_web", "/chat_web.html"):
+            self.serve_chat_web_html()
+            return
         elif clean_path in ("/presentation", "/presentation.html"):
             self.serve_presentation_html()
+            return
+        elif clean_path in ("/docs", "/docs/index.html", "/documentation", "/docs.html"):
+            self.serve_docs_html()
             return
         elif clean_path in ("/healthz", "/health"):
             self.send_response(200)
@@ -188,6 +202,22 @@ class HermesProxyHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b"chat.html not found.")
 
+    def serve_chat_web_html(self):
+        if os.path.exists(CHAT_WEB_HTML_PATH):
+            with open(CHAT_WEB_HTML_PATH, "rb") as f:
+                content = f.read()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(content)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(content)
+        else:
+            self.send_response(404)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"chat_web.html not found.")
+
     def serve_presentation_html(self):
         if os.path.exists(PRESENTATION_HTML_PATH):
             with open(PRESENTATION_HTML_PATH, "rb") as f:
@@ -203,6 +233,22 @@ class HermesProxyHandler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-Type", "text/plain")
             self.end_headers()
             self.wfile.write(b"presentation.html not found.")
+
+    def serve_docs_html(self):
+        if os.path.exists(DOCS_HTML_PATH):
+            with open(DOCS_HTML_PATH, "rb") as f:
+                content = f.read()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(content)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(content)
+        else:
+            self.send_response(404)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"docs/index.html not found.")
 
     def handle_models(self):
         target_url = f"http://127.0.0.1:{GATEWAY_PORT}/v1/models"

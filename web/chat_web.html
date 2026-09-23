@@ -865,6 +865,10 @@
         <a id="linkServerDashboard" href="#" target="_blank" class="btn-swiss primary" style="text-decoration: none; text-align: center; width: 100%; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
           🎛 ABRIR REMOTE DASHBOARD ➔
         </a>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; margin-bottom: 0.75rem;">
+          <a id="linkServerDocs" href="https://hermes-agent-render-a9ab.onrender.com/docs" target="_blank" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">📖 Manual HTML</a>
+          <a id="linkServerSlides" href="https://hermes-agent-render-a9ab.onrender.com/presentation" target="_blank" class="btn-swiss" style="text-decoration: none; font-size: 0.68rem; padding: 0.35rem 0.2rem; text-align: center;">📽 Diapositivas</a>
+        </div>
 
         <div class="health-rack">
           <span>GATEWAY_STATUS</span>
@@ -890,6 +894,8 @@
       </div>
 
       <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <a id="btnRemoteDocs" href="https://hermes-agent-render-a9ab.onrender.com/docs" target="_blank" class="btn-swiss" style="text-decoration: none;" title="Open Master Documentation">📖 DOCS</a>
+        <a id="btnRemoteSlides" href="https://hermes-agent-render-a9ab.onrender.com/presentation" target="_blank" class="btn-swiss" style="text-decoration: none;" title="Interactive Slide Deck">📽 SLIDES</a>
         <a id="btnRemoteDashboard" href="#" target="_blank" class="btn-swiss primary" style="text-decoration: none;" title="Open Remote Hermes Web Dashboard">🎛 DASHBOARD</a>
         <button class="btn-swiss" onclick="startNewSession()">+ NEW</button>
         <button class="btn-swiss" onclick="clearCurrentSession()">CLEAR CHAT</button>
@@ -944,10 +950,23 @@
     let activeSessionId = null;
 
     function updateDashboardLinks() {
-      const base = (serverUrlInput.value || '').trim().replace(/\/+$/, '');
-      const dashUrl = base ? `${base}/dashboard` : '#';
+      const base = (serverUrlInput.value || '').trim().replace(/\/+$/, '') || 'https://hermes-agent-render-a9ab.onrender.com';
+      const dashUrl = `${base}/dashboard`;
+      const docsUrl = `${base}/docs`;
+      const slidesUrl = `${base}/presentation`;
+
       if (btnRemoteDashboard) btnRemoteDashboard.href = dashUrl;
       if (linkServerDashboard) linkServerDashboard.href = dashUrl;
+
+      const btnRemoteDocs = document.getElementById('btnRemoteDocs');
+      const btnRemoteSlides = document.getElementById('btnRemoteSlides');
+      const linkServerDocs = document.getElementById('linkServerDocs');
+      const linkServerSlides = document.getElementById('linkServerSlides');
+
+      if (btnRemoteDocs) btnRemoteDocs.href = docsUrl;
+      if (btnRemoteSlides) btnRemoteSlides.href = slidesUrl;
+      if (linkServerDocs) linkServerDocs.href = docsUrl;
+      if (linkServerSlides) linkServerSlides.href = slidesUrl;
     }
 
     // Initialization

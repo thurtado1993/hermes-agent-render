@@ -7,7 +7,16 @@
 > 2. **Render.com**: Host your private containerized server 24/7 on the Free Web Service tier.
 > 3. **Hermes Agent** (Nous Research): Persistent memory, self-evolving skills, and OpenAI-compatible API gateway.
 > 4. **On-Server Web Chat (`chat.html`)**: Instant browser access directly on your domain without installing anything.
-> 5. **Telegram Bot** (optional): Chat with your agent on mobile or desktop via standard chat messaging.
+> 5. **Hermes Web Dashboard (`/dashboard`)**: Full visual administration and PTY web terminal.
+> 6. **Telegram Bot** (optional): Chat with your agent on mobile or desktop via standard chat messaging.
+
+---
+
+### 🚀 Live Interactive Portals on Render Server
+- 📖 **Interactive Master HTML Documentation**: [hermes-agent-render-a9ab.onrender.com/docs](https://hermes-agent-render-a9ab.onrender.com/docs)
+- 📽 **Interactive Slide Deck Presentation**: [hermes-agent-render-a9ab.onrender.com/presentation](https://hermes-agent-render-a9ab.onrender.com/presentation)
+- 💬 **Live Swiss Modernist Web Chat**: [hermes-agent-render-a9ab.onrender.com](https://hermes-agent-render-a9ab.onrender.com)
+- 🎛 **Official Hermes Web Dashboard**: [hermes-agent-render-a9ab.onrender.com/dashboard](https://hermes-agent-render-a9ab.onrender.com/dashboard)
 
 ---
 
