@@ -33,8 +33,8 @@ Say goodbye to recurring $20+/month subscriptions like ChatGPT Plus or Claude Pr
 - **Cost: $0.00 / Month Forever**: Runs on Render's 750 free monthly instance hours with OpenRouter `:free` models. No credit card required.
 - **Persistent Memory & Tools**: Hermes Agent remembers conversations, builds skills, and executes multi-step workflows.
 - **Swiss Modernist Interface**: Inspired by [seunghyuk.com](https://seunghyuk.com/?ref=siteinspire) with 32px structural grid, high-contrast dark palette, corner crosshairs (`+`), and `Space Grotesk` + `JetBrains Mono` + `Syne` precision typography.
-- **On-Server Web Chat (`chat.html`)**: Built-in console hosted directly on your Render domain (`https://your-service.onrender.com`). Zero CORS issues, zero installation.
-- **Standalone Web Client (`chat_web.html`)**: Lightweight single-file client to connect to your agent remotely from any browser with full configuration storage.
+- **On-Server Web Chat (`chat.html`)**: Built-in console hosted directly on your Render domain (`https://your-service.onrender.com`). Features multi-session chat history, real-time persistence (zero data loss on page refresh), and zero CORS configuration.
+- **Standalone Web Client (`chat_web.html`)**: Lightweight single-file client to connect to your agent remotely from any browser, complete with persistent conversation history, session management, and configuration storage.
 - **Interactive Presentation (`presentation.html`)**: 12-slide modernist visual manual with real-time `[EN / ES]` language switching, touch swipe gestures, and direct links.
 - **Telegram Bot Support**: Send voice notes, files, and text messages directly to your agent from your phone.
 - **High-Performance Free Models**: Access Meta Llama 3.3 70B, Google Gemini 2.0 Flash Lite, DeepSeek R1, and Qwen 2.5 Coder at zero cost.
@@ -120,8 +120,8 @@ Despídete de pagar 20€/mes por suscripciones como ChatGPT Plus o Claude Pro. 
 - **Coste: 0,00 € al mes de por vida**: Aprovecha las 750 horas mensuales gratuitas de Render con modelos `:free` de OpenRouter. Sin tarjeta de crédito.
 - **Memoria Persistente y Habilidades**: Hermes Agent recuerda conversaciones pasadas, evoluciona sus destrezas y ejecuta flujos de tareas complejas.
 - **Diseño Modernista Suizo**: Inspirado en [seunghyuk.com](https://seunghyuk.com/?ref=siteinspire) con retícula estructural de 32px, paleta oscura de alto contraste, cruces de calibración (`+`) y tipografía técnica `Space Grotesk` + `JetBrains Mono` + `Syne`.
-- **Chat Web en el Servidor (`chat.html`)**: Interfaz web integrada servida directamente en tu dominio de Render (`https://tu-servicio.onrender.com`). Cero problemas de CORS y sin instalar nada.
-- **Cliente Web Autónomo (`chat_web.html`)**: Archivo HTML único para conectarte remotamente a tu servidor desde cualquier máquina con almacenamiento persistente de credenciales.
+- **Chat Web en el Servidor (`chat.html`)**: Interfaz web integrada servida directamente en tu dominio de Render (`https://tu-servicio.onrender.com`). Con historial multi-sesión de chats, persistencia total en tiempo real (cero pérdidas al recargar) y sin problemas de CORS.
+- **Cliente Web Autónomo (`chat_web.html`)**: Archivo HTML único para conectarte remotamente a tu servidor desde cualquier máquina, con historial persistente de conversaciones, gestión de sesiones y almacenamiento de credenciales.
 - **Presentación Interactiva (`presentation.html`)**: Manual visual interactivo de 12 diapositivas con conmutador instantáneo de idioma `[EN / ES]`, navegación táctil por deslizamiento y enlaces directos.
 - **Integración con Telegram**: Envía notas de voz, documentos y texto desde tu teléfono a tu agente.
 - **Modelos de Primer Nivel Gratuitos**: Llama 3.3 70B, Gemini 2.0 Flash Lite, DeepSeek R1 y Qwen 2.5 Coder sin coste por token.
