@@ -5,8 +5,9 @@ FROM nousresearch/hermes-agent:latest
 
 USER root
 
-# Create directory structure
-RUN mkdir -p /opt/hermes/web /opt/hermes/deploy
+# Create directory structure and set open permissions for data
+RUN mkdir -p /opt/hermes/web /opt/hermes/deploy /opt/data && \
+    chmod -R 777 /opt/data
 
 # Copy custom web chat and server proxy
 COPY web/chat.html /opt/hermes/web/chat.html

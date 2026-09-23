@@ -575,10 +575,6 @@
       const host = window.location.hostname || 'localhost';
       originTag.textContent = `HOST : ${host.toUpperCase()}`;
 
-      if (!storedKey) {
-        openKeyModal();
-      }
-
       fetchDynamicModels();
     });
 
@@ -706,11 +702,6 @@
 
       if (!prompt) return;
 
-      if (!apiKey) {
-        openKeyModal();
-        return;
-      }
-
       appendUnit('user', prompt);
       history.push({ role: 'user', content: prompt });
       promptInput.value = '';
@@ -719,12 +710,16 @@
       const botCard = appendUnit('bot', 'Processing query...');
 
       try {
+        const reqHeaders = {
+          'Content-Type': 'application/json'
+        };
+        if (apiKey) {
+          reqHeaders['Authorization'] = `Bearer ${apiKey}`;
+        }
+
         const response = await fetch('/v1/chat/completions', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
+          headers: reqHeaders,
           body: JSON.stringify({
             model: model,
             messages: [
@@ -738,7 +733,18 @@
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}. If the Render instance is waking from sleep, please wait 30 seconds and retry.`);
+          let errorText = '';
+          let gatewayLog = '';
+          try {
+            const errObj = await response.json();
+            errorText = errObj.error || errObj.message || JSON.stringify(errObj);
+            gatewayLog = errObj.gateway_log || '';
+          } catch (_) {
+            errorText = await response.text();
+          }
+          const err = new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
+          if (gatewayLog) err.gatewayLog = gatewayLog;
+          throw err;
         }
 
         const data = await response.json();
@@ -750,10 +756,58 @@
         history.push({ role: 'assistant', content: text });
 
       } catch (err) {
-        botCard.querySelector('.msg-body').innerHTML = `
-          <span style="color: var(--danger); font-family: var(--mono); font-weight: 700;">[COMMUNICATION_ERROR]</span><br>
-          ${err.message}
-        `;
+        const bodyEl = botCard.querySelector('.msg-body');
+        bodyEl.innerHTML = '';
+
+        const badge = document.createElement('span');
+        badge.style.color = 'var(--danger)';
+        badge.style.fontFamily = 'var(--mono)';
+        badge.style.fontWeight = '700';
+        badge.textContent = '[COMMUNICATION_ERROR]';
+
+        const msgDiv = document.createElement('div');
+        msgDiv.style.marginTop = '8px';
+        msgDiv.textContent = err.message;
+
+        bodyEl.appendChild(badge);
+        bodyEl.appendChild(msgDiv);
+
+        if (err.gatewayLog && err.gatewayLog.trim() && err.gatewayLog !== 'No gateway logs recorded.') {
+          const logTitle = document.createElement('div');
+          logTitle.style.marginTop = '12px';
+          logTitle.style.fontFamily = 'var(--mono)';
+          logTitle.style.fontSize = '0.7rem';
+          logTitle.style.color = 'var(--text-muted)';
+          logTitle.textContent = 'GATEWAY STARTUP LOG:';
+
+          const logPre = document.createElement('pre');
+          logPre.style.marginTop = '4px';
+          logPre.style.padding = '8px 10px';
+          logPre.style.background = 'rgba(0, 0, 0, 0.4)';
+          logPre.style.border = '1px solid var(--border)';
+          logPre.style.borderRadius = '2px';
+          logPre.style.fontSize = '0.75rem';
+          logPre.style.fontFamily = 'var(--mono)';
+          logPre.style.whiteSpace = 'pre-wrap';
+          logPre.style.wordBreak = 'break-all';
+          logPre.style.color = 'var(--text-muted)';
+          logPre.textContent = err.gatewayLog;
+
+          bodyEl.appendChild(logTitle);
+          bodyEl.appendChild(logPre);
+        }
+
+        const retryBtn = document.createElement('button');
+        retryBtn.className = 'btn-swiss';
+        retryBtn.style.marginTop = '12px';
+        retryBtn.style.fontSize = '0.72rem';
+        retryBtn.textContent = 'RETRY TRANSMISSION ↺';
+        retryBtn.onclick = () => {
+          botCard.remove();
+          promptInput.value = prompt;
+          transmit();
+        };
+        bodyEl.appendChild(retryBtn);
       } finally {
         sendBtn.disabled = false;
         promptInput.focus();
